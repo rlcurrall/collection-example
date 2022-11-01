@@ -1,0 +1,253 @@
+basePath: /
+definitions:
+  handlers.ErrorResponse:
+    properties:
+      message:
+        example: An error occurred
+        type: string
+    type: object
+  models.Comic:
+    properties:
+      coverYear:
+        example: "2011-02-03"
+        type: string
+      created_at:
+        type: string
+      genre:
+        example: superhero
+        type: string
+      grade:
+        example: 9.2
+        type: number
+      id:
+        type: integer
+      imageUrl:
+        example: https://www.dccomics.com/sites/default/files/styles/covers192x291/public/comic-covers/2018/06/batman_v2_52_5b2ad8fd533996.66775403.jpg
+        type: string
+      issueNumber:
+        example: "52"
+        type: string
+      mainCharacter:
+        example: Batman
+        type: string
+      price:
+        example: 32.21
+        type: number
+      publisher:
+        example: DC
+        type: string
+      title:
+        example: 'Batman #52 (2011)'
+        type: string
+      updated_at:
+        type: string
+      username:
+        example: cmx_collector42
+        type: string
+    type: object
+  models.NewComic:
+    properties:
+      coverYear:
+        example: "2011-02-03"
+        type: string
+      genre:
+        example: superhero
+        type: string
+      grade:
+        example: 9.2
+        type: number
+      imageUrl:
+        example: https://www.dccomics.com/sites/default/files/styles/covers192x291/public/comic-covers/2018/06/batman_v2_52_5b2ad8fd533996.66775403.jpg
+        type: string
+      issueNumber:
+        example: "52"
+        type: string
+      mainCharacter:
+        example: Batman
+        type: string
+      price:
+        example: 32.21
+        type: number
+      publisher:
+        example: DC
+        type: string
+      title:
+        example: 'Batman #52 (2011)'
+        type: string
+    type: object
+info:
+  contact:
+    email: rlcurrall@gmail.com
+    name: Robb Currall
+  description: This is an API for tracking collections
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Collection API
+  version: "1.0"
+paths:
+  /v1/comics:
+    get:
+      consumes:
+      - application/json
+      description: Get all comics
+      parameters:
+      - description: Owner of the comics
+        in: query
+        name: username
+        type: string
+      - description: Title of the comic
+        in: query
+        name: title
+        type: string
+      - description: Order by price
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order[price]
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Comic'
+              type: array
+            type: array
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get all comics
+      tags:
+      - comics
+    post:
+      consumes:
+      - application/json
+      description: Add a new comic
+      parameters:
+      - description: Add a comic
+        in: body
+        name: comic
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewComic'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comic'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Add a new comic
+      tags:
+      - comics
+  /v1/comics/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove comic by ID
+      parameters:
+      - description: Comic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Remove comic by ID
+      tags:
+      - comics
+    get:
+      consumes:
+      - application/json
+      description: Get comic by ID
+      parameters:
+      - description: Comic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comic'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get comic by ID
+      tags:
+      - comics
+    patch:
+      consumes:
+      - application/json
+      description: Update comic by ID
+      parameters:
+      - description: Comic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Add a comic
+        in: body
+        name: comic
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewComic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comic'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Update comic by ID
+      tags:
+      - comics
+securityDefinitions:
+  BearerToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
